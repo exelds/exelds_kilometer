@@ -15,7 +15,6 @@ RegisterCommand("km",function(source)
 		local vehicle = GetVehiclePedIsIn(PlayerPedId())
 		local plate = GetVehicleNumberPlateText(vehicle)
 		ESX.TriggerServerCallback('ExeLds:getKilometer', function(kilometre)
-			kilometre = 500
 			if kilometre > Config.asama4km then		
 				exports['mythic_notify']:SendAlert('inform', 'Aracın toplam gittiği yol: '..kilometre..'km', 5000, { ['background-color'] = '#CC0000', ['color'] = '#FFFFFF' })
 			elseif kilometre > Config.asama3km then		
