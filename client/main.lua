@@ -36,14 +36,61 @@ local ownedVehicles = {}
 local lastCoords
 local currentKilometer
 
+
+
 Citizen.CreateThread(function()
-	while true do
-		Citizen.Wait(1000)
+    while true do		
+		local playerPed = PlayerPedId()
+		local vehicle = GetVehiclePedIsIn(playerPed, true)	
+		if IsPedInAnyVehicle(playerPed, false) and GetPedInVehicleSeat(vehicle, -1) == playerPed then		
+			if currentKilometer == nil then
+				local plate = GetVehicleNumberPlateText(vehicle)
+				Citizen.Wait(500)
+					ESX.TriggerServerCallback('ExeLds:getKilometer', function(kilometre)		
+						currentKilometer = kilometre 
+					end, plate)				
+			else
+				drawTxt("Kilometre Sayaci : ", 2, {255, 255, 255}, 0.4, 0.170 , 0.810)
+				if currentKilometer > Config.asama4km then		
+					drawTxt(currentKilometer.."km", 2, {204, 0, 0}, 0.4, 0.250 , 0.810)
+				elseif currentKilometer > Config.asama3km then		
+					drawTxt(currentKilometer.."km", 2, {255, 102, 102}, 0.4, 0.250 , 0.810)
+				elseif currentKilometer > Config.asama2km then		
+					drawTxt(currentKilometer.."km", 2, {255, 153, 153}, 0.4, 0.250 , 0.810)
+				elseif currentKilometer > Config.asama1km then		
+					drawTxt(currentKilometer.."km", 2, {255, 204, 204}, 0.4, 0.250 , 0.810)
+				elseif currentKilometer <= Config.asama1km then		
+					drawTxt(currentKilometer.."km", 2, {255, 255, 255}, 0.4, 0.250 , 0.810)
+				end				
+			end
+		end	
+		Citizen.Wait(10)
+    end
+end)
+
+
+function drawTxt(content, font, colour, scale, x, y)
+    SetTextFont(font)
+    SetTextScale(scale, scale)
+    SetTextColour(colour[1],colour[2],colour[3], 255)
+    SetTextEntry("STRING")
+    SetTextDropShadow(0, 0, 0, 0,255)
+    SetTextDropShadow()
+    SetTextEdge(4, 0, 0, 0, 255)
+    SetTextOutline()
+    AddTextComponentString(content)
+    DrawText(x, y)
+end
+
+
+Citizen.CreateThread(function()
+	while true do		
 		local playerPed = PlayerPedId()
 		if IsPedInAnyVehicle(playerPed, false) and GetPedInVehicleSeat(GetVehiclePedIsIn(playerPed, true), -1) == playerPed then
 			local vehicle = GetVehiclePedIsIn(PlayerPedId())
 			local plate = GetVehicleNumberPlateText(vehicle)
 			if ownedVehicles[plate] == nil then
+				Citizen.Wait(500)
 				ESX.TriggerServerCallback('ExeLds:getOwnedCarInfo', function(result)
 					if result then
 						ownedVehicles[plate] = 1
@@ -61,7 +108,15 @@ Citizen.CreateThread(function()
 				local distance = GetDistanceBetweenCoords(currentCoords, lastCoords, true)
 				lastCoords = currentCoords			
 				ownedVehicles[plate] = ownedVehicles[plate] + distance
-				if ownedVehicles[plate] > 1000 then
+				if ownedVehicles[plate] > 10 then				
+					if currentKilometer == nil then
+						Citizen.Wait(500)
+						ESX.TriggerServerCallback('ExeLds:getKilometer', function(kilometre)		
+							currentKilometer = kilometre + 1
+						end, plate)
+					else
+						currentKilometer = currentKilometer + 1
+					end
 					TriggerServerEvent('ExeLds:updateCar', plate)
 					ownedVehicles[plate] = 1
 				end
@@ -71,10 +126,11 @@ Citizen.CreateThread(function()
 			currentKilometer = nil
 			ownedVehicles = {}
 		end	
+		Citizen.Wait(1000)
 	end
 end)
 
-Citizen.CreateThread(function()
+--[[Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(10000)
 		local playerPed = PlayerPedId()
@@ -86,16 +142,16 @@ Citizen.CreateThread(function()
 			end, plate)	
 		end
 	end
-end)
+end)]]
 
 Citizen.CreateThread(function()
-	while true do
-		Citizen.Wait(20000)		
+	while true do			
 		local playerPed = PlayerPedId()
 		if IsPedInAnyVehicle(playerPed, false) and GetPedInVehicleSeat(GetVehiclePedIsIn(playerPed, true), -1) == playerPed then
 			local vehicle = GetVehiclePedIsIn(PlayerPedId())	
 			if currentKilometer == nil then
 				local plate = GetVehicleNumberPlateText(vehicle)
+				Citizen.Wait(500)
 				ESX.TriggerServerCallback('ExeLds:getKilometer', function(kilometre)		
 					currentKilometer = kilometre
 				end, plate)	
@@ -210,5 +266,6 @@ Citizen.CreateThread(function()
 				end
 			end				
 		end
+		Citizen.Wait(20000)	
 	end
 end)
