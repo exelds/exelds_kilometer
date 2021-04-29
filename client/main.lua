@@ -130,20 +130,6 @@ Citizen.CreateThread(function()
 	end
 end)
 
---[[Citizen.CreateThread(function()
-	while true do
-		Citizen.Wait(10000)
-		local playerPed = PlayerPedId()
-		if IsPedInAnyVehicle(playerPed, false) and GetPedInVehicleSeat(GetVehiclePedIsIn(playerPed, true), -1) == playerPed then
-			local vehicle = GetVehiclePedIsIn(PlayerPedId())
-			local plate = GetVehicleNumberPlateText(vehicle)
-			ESX.TriggerServerCallback('ExeLds:getKilometer', function(kilometre)		
-				currentKilometer = kilometre
-			end, plate)	
-		end
-	end
-end)]]
-
 Citizen.CreateThread(function()
 	while true do			
 		local playerPed = PlayerPedId()
