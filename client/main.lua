@@ -108,7 +108,7 @@ Citizen.CreateThread(function()
 				local distance = GetDistanceBetweenCoords(currentCoords, lastCoords, true)
 				lastCoords = currentCoords			
 				ownedVehicles[plate] = ownedVehicles[plate] + distance
-				if ownedVehicles[plate] > 10 then				
+				if ownedVehicles[plate] > 1000 then				
 					if currentKilometer == nil then
 						Citizen.Wait(500)
 						ESX.TriggerServerCallback('ExeLds:getKilometer', function(kilometre)		
